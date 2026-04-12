@@ -440,13 +440,18 @@ function renderForecast() {
 }
 
 function renderAll() {
-  renderKPI();
-  renderDailyChart();
-  renderCatsChart();
-  renderChanChart();
-  renderProds();
-  renderTop10();
-  renderForecast();
+  try {
+    renderKPI();
+    renderDailyChart();
+    renderCatsChart();
+    renderChanChart();
+    renderProds();
+    renderTop10();
+    renderForecast();
+  } catch(e) {
+    console.error('renderAll error:', e);
+    alert('渲染错误: ' + e.message);
+  }
 }
 
 // Auto-unlock if already authenticated in session
