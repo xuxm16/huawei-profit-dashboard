@@ -68,7 +68,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 /* chart containers: explicit height + width */
 .panel .chart-wrap{position:relative;width:100%;height:240px}
 /* force canvas to fill its chart-wrap */
-.panel canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+.panel canvas{position:absolute;top:14px;left:14px;right:14px;bottom:14px;width:auto!important;height:auto!important;display:block}
 /* table */
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:#fafafa;text-align:left;padding:10px 12px;font-weight:500;color:#888;border-bottom:1px solid #eee;position:sticky;top:0}
@@ -196,13 +196,14 @@ function ck(){
   if(document.getElementById("pw").value === "huawei2026"){
     document.getElementById("lock").style.display = "none";
     document.getElementById("main").classList.remove("hidden");
-    requestAnimationFrame(function(){ initCharts(); });
+    setTimeout(function(){
+      try { initCharts(); }
+      catch(e) { console.error('initCharts error:', e.message, e.stack); alert('图表初始化失败: ' + e.message); }
+    }, 50);
   } else {
     document.getElementById("pwErr").textContent = "密码错误，请重试";
   }
-}
-
-// 切换TAB
+}// 切换TAB
 function sw(name, btn){
   var main = document.getElementById("tab-main");
   var fc = document.getElementById("tab-fc");
@@ -274,13 +275,45 @@ FCCN.forEach(function(cn, i){
 });
 
 // ========== 图表 ==========
+
 var charts = {};
 
 function initCharts(){
-  var gStyle = {color: "#f0f0f0", drawBorder: false};
-  var tStyle = {color: "#999"};
+  var gStyle = {color: "#f0f0f0"};
+  var tStyle = {color: "#999", font:{size:11}};
 
-  // 1. 品类横向条形图
+  // Helper: size a canvas to its .chart-wrap container
+  function sizeCanvas(id, w, h) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.width = w;
+    el.height = h;
+  }
+
+  // Size all chart canvases explicitly before creating charts
+  sizeCanvas('catBar',     500, 260);
+  sizeCanvas('dailyLine',  500, 260);
+  sizeCanvas('catTrend',   600, 240);
+  sizeCanvas('fcCatBar',   500, 260);
+  sizeCanvas('fcChanBar',  500, 260);
+  sizeCanvas('fcDailyBar', 500, 240);
+
+  // Shared bar options
+  var barBase = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {callbacks: {label: function(ctx){ return ctx.raw.toLocaleString() + "件"; }}}
+    },
+    scales: {
+      x: {grid: gStyle, ticks: tStyle},
+      y: {grid: false, ticks: tStyle}
+    }
+  };
+
+  // 1. 品类出货量横向条形图
   charts.catBar = new Chart(document.getElementById("catBar"), {
     type: "bar",
     data: {
@@ -292,18 +325,9 @@ function initCharts(){
         borderSkipped: false
       }]
     },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      plugins: {
-        legend: {display: false},
-        tooltip: {callbacks: {label: function(ctx){ return ctx.raw.toLocaleString() + "件"; }}}
-      },
-      scales: {
-        x: {grid: gStyle, ticks: tStyle},
-        y: {grid: false, ticks: {font: {size: 11}}}
-      }
-    }
+    options: Object.assign({indexAxis: "y"}, barBase, {
+      scales: {x: {grid: gStyle, ticks: tStyle}, y: {grid: false, ticks: {font:{size:11}}}}
+    })
   });
 
   // 2. 日出货趋势折线图
@@ -325,6 +349,8 @@ function initCharts(){
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
       plugins: {legend: {display: false}},
       scales: {
         x: {grid: false, ticks: {font: {size: 10}, maxRotation: 45}},
@@ -350,6 +376,8 @@ function initCharts(){
     data: {labels: DL, datasets: trendDatasets},
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
       plugins: {
         legend: {position: "bottom", labels: {boxWidth: 12, font: {size: 10}}}
       },
@@ -361,30 +389,19 @@ function initCharts(){
   });
 
   // 4. 预测品类条形图
-  var fcFilt = FCCN.map(function(n, i){ return {n: n, v: FCCQ[i]}; }).filter(function(x){return x.v > 0;});
+  var fcFilt = FCCN.map(function(n, i){ return {n:n, v:FCCQ[i]}; }).filter(function(x){return x.v>0;});
   charts.fcCatBar = new Chart(document.getElementById("fcCatBar"), {
     type: "bar",
     data: {
       labels: fcFilt.map(function(x){return x.n;}),
       datasets: [{
         data: fcFilt.map(function(x){return x.v;}),
-        backgroundColor: fcFilt.map(function(_, i){return fcColors[i % fcColors.length] + "dd";}),
+        backgroundColor: fcFilt.map(function(_, i){return fcColors[i%fcColors.length]+"dd";}),
         borderRadius: 6,
         borderSkipped: false
       }]
     },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      plugins: {
-        legend: {display: false},
-        tooltip: {callbacks: {label: function(ctx){ return ctx.raw.toLocaleString() + "件"; }}}
-      },
-      scales: {
-        x: {grid: gStyle, ticks: tStyle},
-        y: {grid: false, ticks: {font: {size: 11}}}
-      }
-    }
+    options: Object.assign({indexAxis: "y"}, barBase)
   });
 
   // 5. 预测渠道条形图
@@ -394,21 +411,51 @@ function initCharts(){
       labels: FCCHN,
       datasets: [{
         data: FCCHQ,
-        backgroundColor: FCCHN.map(function(_, i){return cColors[i % cColors.length] + "dd";}),
+        backgroundColor: FCCHN.map(function(_, i){return cColors[i%cColors.length]+"dd";}),
         borderRadius: 6,
         borderSkipped: false
       }]
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: {display: false},
-        tooltip: {callbacks: {label: function(ctx){ return ctx.raw.toLocaleString() + "件"; }}}
-      },
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {legend: {display: false}},
+      scales: {x: {grid: false, ticks: tStyle}, y: {grid: gStyle, ticks: tStyle}}
+    }
+  });
+
+  // 6. 预测日趋势柱状图
+  charts.fcDailyBar = new Chart(document.getElementById("fcDailyBar"), {
+    type: "bar",
+    data: {
+      labels: DL,
+      datasets: [{
+        label: "预测日出货",
+        data: DV,
+        backgroundColor: "rgba(22,119,255,0.5)",
+        borderColor: "#1677ff",
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {legend: {display: false}},
       scales: {
-        x: {grid: false, ticks: {font: {size: 12}}},
+        x: {grid: false, ticks: {font: {size: 9}, maxRotation: 45}},
         y: {grid: gStyle, ticks: tStyle}
       }
+    }
+  });
+
+  // Debug: log dimensions after charts created
+  ['catBar','dailyLine','catTrend'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) {
+      console.log(id + ' actual size: ' + el.width + ' x ' + el.height);
     }
   });
 }
