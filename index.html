@@ -20,60 +20,67 @@
 //# sourceMappingURL=chart.umd.js.map
 </script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#1a1a1a;font-size:13px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#f4f7fe;color:#222;font-size:14px}
+.hidden{display:none!important}
+#lock{position:fixed;inset:0;background:#1677ff;display:flex;align-items:center;justify-content:center;z-index:9999}
+#lock>div{background:#fff;border-radius:16px;padding:40px 32px;text-align:center;max-width:360px;width:90%}
+#lock h2{font-size:20px;margin-bottom:6px}
+#lock p{color:#888;font-size:13px;margin-bottom:20px}
+#pw{width:100%;padding:12px 16px;border:2px solid #e8e8e8;border-radius:8px;font-size:16px;outline:none;transition:border-color .2s}
+#pw:focus{border-color:#1677ff}
+#lock button{width:100%;padding:12px;background:#1677ff;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;margin-top:12px}
+#lock button:hover{background:#0958d9}
 .wrap{padding:16px 20px;max-width:1400px;margin:0 auto}
-#lock{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
-#lock h2{font-size:24px;color:#111;font-weight:600}
-#lock .sub{color:#888;font-size:14px}
-#lock input{padding:11px 18px;border:1.5px solid #d9d9d9;border-radius:8px;font-size:15px;width:230px;text-align:center}
-#lock input:focus{border-color:#1677ff;outline:none}
-#lock p{color:#f5222d;font-size:13px;height:18px}
-#lock button{padding:10px 36px;background:#1677ff;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-weight:500}
-.nav{display:flex;align-items:center;padding:12px 20px;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:100}
-.nav h1{font-size:17px;color:#111;margin-right:auto;font-weight:600}
-.nav span{font-size:12px;color:#888;margin-right:16px}
-.tab{padding:6px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:1.5px solid #d9d9d9;background:#fff;color:#555;margin-left:10px;transition:all .15s}
-.tab.active{background:#1677ff;border-color:#1677ff;color:#fff}
-.tab:hover:not(.active){border-color:#1677ff;color:#1677ff}
-.kpi{display:grid;gap:10px;margin-bottom:14px}
-.kpi4{grid-template-columns:repeat(4,1fr)}
-.card{background:#fff;border-radius:10px;padding:14px 10px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #eee}
-.card .val{font-size:22px;font-weight:700;line-height:1.3}
-.card .label{font-size:11px;color:#888;margin-top:3px}
-.section{margin-bottom:14px}
-.section-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.section-title span{font-size:14px;font-weight:600;color:#222}
-.tag{background:#e6f4ff;color:#1677ff;font-size:11px;padding:2px 8px;border-radius:10px}
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.nav h1{font-size:17px;font-weight:600}
+.nav span{color:#888;font-size:13px}
+.tab{margin-left:12px;padding:6px 16px;border:1px solid #e0e0e0;border-radius:20px;background:#fff;cursor:pointer;font-size:13px;transition:all .15s}
+.tab.active{background:#1677ff;color:#fff;border-color:#1677ff}
+/* KPI row */
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.card{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card:first-child{border-left:3px solid #1677ff}
+.card:nth-child(2){border-left:3px solid #52c41a}
+.card:nth-child(3){border-left:3px solid #fa8c16}
+.card:nth-child(4){border-left:3px solid #722ed1}
+.val{font-size:26px;font-weight:700;line-height:1}
+.label{color:#888;font-size:12px;margin-top:4px}
+/* section */
+.section{margin-bottom:12px}
+.section-title{font-size:13px;color:#555;margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:8px}
+.tag{background:#f0f6ff;color:#1677ff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:400}
+/* channel row */
+.chan-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.chan-card{background:#fff;border-radius:10px;padding:16px;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.chan-name{font-size:13px;font-weight:600;margin-bottom:10px}
+.chan-prog{height:6px;background:#f0f0f0;border-radius:3px;margin:8px 0 6px}
+.chan-bar{height:100%;border-radius:3px;transition:width 1s ease}
+.chan-meta{display:flex;justify-content:space-between;font-size:12px;color:#888}
+/* charts grid */
 .charts{display:grid;gap:12px;margin-bottom:12px}
 .charts2{grid-template-columns:1fr 1fr}
-.panel{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #eee}
+/* PANEL: explicit height so Chart.js canvas has a proper parent */
+.panel{background:#fff;border-radius:10px;padding:14px;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden}
 .panel h3{font-size:13px;color:#555;margin-bottom:10px;font-weight:500}
-.panel canvas{width:100%;height:auto}
-.panel canvas{width:100%!important;height:100%!important}
-canvas{width:100%!important}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:7px 10px;background:#fafafa;color:#666;border-bottom:1.5px solid #eee;font-weight:500;position:sticky;top:0}
-td{padding:7px 10px;border-bottom:1px solid #f5f5f5;color:#333}
-tr:hover td{background:#f9f9f9}
-.num{text-align:right;font-variant-numeric:tabular-nums}
-.prog-item{margin-bottom:9px}
-.prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
-.prog-label span:first-child{color:#333}
-.prog-label span:last-child{color:#888}
-.prog-bar{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width .6s}
-.chan-row{display:flex;gap:10px;margin-bottom:14px}
-.chan-card{flex:1;background:#fff;border-radius:10px;padding:12px 8px;text-align:center;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.chan-card .cname{font-size:11px;color:#888;margin-bottom:6px}
-.chan-card .cval{font-size:22px;font-weight:700;line-height:1.2}
-.chan-card .cpct{font-size:11px;color:#aaa;margin-top:2px}
-.tip-item{flex:1;min-width:180px;background:#fafafa;border-radius:8px;padding:12px;border:1px solid #f0f0f0}
-.tip-name{font-size:12px;color:#555;margin-bottom:6px}
-.tip-val{font-size:20px;font-weight:700;margin-bottom:4px}
-.tip-sub{font-size:11px;color:#888}
-.tips-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
-.hidden{display:none}
+/* chart containers: explicit height + width */
+.panel .chart-wrap{position:relative;width:100%;height:240px}
+/* force canvas to fill its chart-wrap */
+.panel canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#fafafa;text-align:left;padding:10px 12px;font-weight:500;color:#888;border-bottom:1px solid #eee;position:sticky;top:0}
+td{padding:10px 12px;border-bottom:1px solid #f5f5f5}
+.num{text-align:right}
+.rank{width:40px;color:#888}
+tbody tr:hover{background:#f9f9ff}
+tbody tr:last-child td{border-bottom:none}
+/* progress bar in table */
+.prog-h{height:4px;background:#f0f0f0;border-radius:2px;margin-top:4px;width:120px}
+.prog-h>div{height:100%;border-radius:2px}
+@media(max-width:768px){.kpi{grid-template-columns:1fr 1fr}.charts2{grid-template-columns:1fr}.chan-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -112,18 +119,18 @@ tr:hover td{background:#f9f9f9}
     <div class="charts charts2">
       <div class="panel">
         <h3>📱 品类出货量排行（横向条形图）</h3>
-        <canvas id="catBar" height="260"></canvas>
+        <div class="chart-wrap" style="height:260px"><canvas id="catBar"></canvas></div>
         <div style="margin-top:12px" id="catBars"></div>
       </div>
       <div class="panel">
         <h3>📈 日出货趋势（3月全月）</h3>
-        <canvas id="dailyLine" height="260"></canvas>
+        <div class="chart-wrap" style="height:260px"><canvas id="dailyLine"></canvas></div>
       </div>
     </div>
 
     <div class="section">
       <div class="section-title"><span>📊 主要品类日趋势对比</span><span class="tag">TOP 5 品类每日走势</span></div>
-      <div class="panel"><canvas id="catTrend" height="200"></canvas></div>
+      <div class="panel"><div class="chart-wrap" style="height:240px"><canvas id="catTrend"></canvas></div></div>
     </div>
 
     <div class="section">
@@ -154,12 +161,12 @@ tr:hover td{background:#f9f9f9}
     <div class="charts charts2">
       <div class="panel">
         <h3>📱 品类预测备货量</h3>
-        <canvas id="fcCatBar" height="260"></canvas>
+        <div class="chart-wrap" style="height:260px"><canvas id="fcCatBar"></canvas></div>
         <div style="margin-top:12px" id="fcCatBars"></div>
       </div>
       <div class="panel">
         <h3>🏪 渠道预测出货量</h3>
-        <canvas id="fcChanBar" height="260"></canvas>
+        <div class="chart-wrap" style="height:260px"><canvas id="fcChanBar"></canvas></div>
       </div>
     </div>
   </div>
