@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Chart Test</title>
+<script src="chart.min.js"></script>
+<style>
+body{font-family:sans-serif;padding:20px;background:#fafafa}
+canvas{background:#fff;border:1px solid #eee;margin-bottom:30px}
+h3{margin:10px 0 5px}
+#log{background:#111;color:#0f0;padding:10px;font-size:12px;white-space:pre;max-height:200px;overflow:auto}
+</style>
+</head><body>
+<h3>1. 日出货趋势折线图 (dailyLine)</h3>
+<canvas id="dailyLine" height="200"></canvas>
+<h3>2. 主要品类日趋势对比 (catTrend)</h3>
+<canvas id="catTrend" height="200"></canvas>
+<div id="log"></div>
+<script>
+var DL = ["03-01", "03-02", "03-03", "03-04", "03-05", "03-06", "03-07", "03-08", "03-09", "03-10", "03-11", "03-12", "03-13", "03-14", "03-15", "03-16", "03-17", "03-18", "03-19", "03-20", "03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"];
+var DV = [258, 180, 170, 172, 194, 174, 165, 257, 256, 145, 106, 212, 144, 177, 161, 157, 209, 167, 183, 137, 133, 201, 227, 268, 223, 204, 135, 179, 276, 284];
+var T5N = ["HUAWEI WATCH FIT 4 悦动白氟橡胶表带", "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带", "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm", "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm", "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm"];
+var T5T = [{"date": "03-01", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 63, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 38, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 40, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 22, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 3}, {"date": "03-02", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 38, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 19, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 30, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 20, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 14}, {"date": "03-03", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 34, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 16, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 24, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 10, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 21}, {"date": "03-04", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 17, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 15, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 16, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 27, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 16}, {"date": "03-05", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 46, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 30, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 25, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 17, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 17}, {"date": "03-06", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 27, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 24, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 33, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 28, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 2}, {"date": "03-07", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 38, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 14, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 33, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 12, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 12}, {"date": "03-08", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 59, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 22, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 42, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 21, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 35}, {"date": "03-09", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 48, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 14, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 47, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 30, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 33}, {"date": "03-10", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 25, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 22, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 15, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 20, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 12}, {"date": "03-11", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 24, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 11, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 8, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 13, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 15}, {"date": "03-12", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 47, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 21, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 10, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 13, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 21}, {"date": "03-13", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 35, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 25, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 6, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 12, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 19}, {"date": "03-14", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 45, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 20, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 13, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 15, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 13}, {"date": "03-15", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 34, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 19, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 24, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 11, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 15}, {"date": "03-16", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 40, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 30, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 17, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 11, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 8}, {"date": "03-17", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 35, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 25, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 18, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 12, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 12}, {"date": "03-18", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 37, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 14, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 9, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 14, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 21}, {"date": "03-19", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 39, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 18, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 14, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 18, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 26}, {"date": "03-20", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 46, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 10, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 12, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 14, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 8}, {"date": "03-21", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 31, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 18, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 17, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 11, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 4}, {"date": "03-22", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 53, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 21, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 21, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 29, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 6}, {"date": "03-23", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 42, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 25, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 27, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 21, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 6}, {"date": "03-24", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 61, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 37, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 20, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 32, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 1}, {"date": "03-25", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 40, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 32, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 11, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 25, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 9}, {"date": "03-26", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 42, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 27, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 17, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 19, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 9}, {"date": "03-27", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 26, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 17, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 10, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 22, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 4}, {"date": "03-28", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 33, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 23, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 17, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 17, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 3}, {"date": "03-29", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 53, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 36, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 34, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 35, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 10}, {"date": "03-30", "HUAWEI WATCH FIT 4 悦动白氟橡胶表带": 62, "HUAWEI WATCH FIT 4 韵律黑氟橡胶表带": 34, "HUAWEI WATCH GT 6 KSU-B19 (紫色氟橡胶表带) 流光紫 41mm": 36, "HUAWEI WATCH GT 6 ATM-B19 (黑色氟橡胶表带) 雅丹黑 46mm": 30, "HUAWEI WATCH 5 RTS-AL00（黑色氟橡胶表带）苍穹黑 46mm": 14}];
+var log = document.getElementById('log');
+function logMsg(m){ log.textContent += m + '\n'; }
+logMsg('DL len=' + DL.length + ' DV len=' + DV.length);
+logMsg('T5N len=' + T5N.length + ' T5T len=' + T5T.length);
+var fcColors = ["#1677ff","#52c41a","#fa8c16","#722ed1","#f5222d"];
+
+// Chart 1
+try {
+  logMsg('Creating dailyLine...');
+  var cl = new Chart(document.getElementById('dailyLine'), {
+    type: 'line',
+    data: {
+      labels: DL,
+      datasets: [{
+        label: '日销量',
+        data: DV,
+        borderColor: '#1677ff',
+        backgroundColor: 'rgba(22,119,255,0.08)',
+        borderWidth: 2,
+        pointRadius: 3,
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {legend: {display: false}},
+      scales: {
+        x: {grid: false, ticks: {font: {size: 10}}},
+        y: {grid: {color: '#f0f0f0'}, ticks: {color: '#999'}}
+      }
+    }
+  });
+  logMsg('dailyLine created OK, type=' + typeof cl);
+} catch(e) {
+  logMsg('dailyLine ERROR: ' + e.message);
+  logMsg('Stack: ' + (e.stack||'').split('\n')[1]);
+}
+
+// Chart 2
+try {
+  logMsg('Creating catTrend...');
+  var trendDatasets = T5N.map(function(name, i){
+    return {
+      label: name.slice(0,16),
+      data: T5T.map(function(t){ return t[name] || 0; }),
+      borderColor: fcColors[i],
+      backgroundColor: 'transparent',
+      borderWidth: 1.8,
+      tension: 0.3
+    };
+  });
+  logMsg('Datasets ready, count=' + trendDatasets.length);
+  var ct = new Chart(document.getElementById('catTrend'), {
+    type: 'line',
+    data: {labels: DL, datasets: trendDatasets},
+    options: {
+      responsive: true,
+      plugins: {legend: {position:'bottom',labels:{boxWidth:12}}},
+      scales: {
+        x: {grid: false, ticks: {font: {size: 9}}},
+        y: {grid: {color: '#f0f0f0'}, ticks: {color: '#999'}}
+      }
+    }
+  });
+  logMsg('catTrend created OK, type=' + typeof ct);
+} catch(e) {
+  logMsg('catTrend ERROR: ' + e.message);
+  logMsg('Stack: ' + (e.stack||'').split('\n')[1]);
+}
+</script></body></html>
