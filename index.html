@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>华为穿戴备货看板</title>
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0a0e1a;color:#e0e6f0;padding:20px}
 .title-bar{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #1e2a3a}
 .title-bar h1{font-size:22px;font-weight:700;background:linear-gradient(90deg,#42d4f5,#c678dd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.lock{font-size:13px;color:#7a8ba8}
-.lock input{padding:5px 10px;border:1px solid #2a3a50;border-radius:6px;background:#131c2e;color:#e0e6f0;outline:none}
-.lock input:focus{border-color:#42d4f5}
-.unlock{color:#42d4f5;font-size:13px;margin-bottom:0}
-.unlock span{color:#98a8be;font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline}
+.sub{font-size:13px;color:#5a6a80}
+.lock-row{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:#5a6a80}
+.lock-row input{padding:5px 10px;border:1px solid #2a3a50;border-radius:6px;background:#131c2e;color:#e0e6f0;outline:none;width:120px}
+.lock-row button{padding:5px 12px;border:1px solid #2a3a50;border-radius:6px;background:#1a2540;color:#7a8ba8;cursor:pointer;font-size:12px}
 .hidden{display:none}
 .tabs{display:flex;gap:4px;margin-bottom:20px}
 .tab{padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-size:14px;background:#131c2e;color:#7a8ba8;transition:all .2s}
@@ -21,9 +21,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .tab:hover:not(.active){color:#42d4f5}
 .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
 .kpi{background:#131c2e;border:1px solid #1e2a3a;border-radius:12px;padding:16px;text-align:center}
-.kpi .label{font-size:12px;color:#7a8ba8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .label{font-size:11px;color:#7a8ba8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
 .kpi .value{font-size:28px;font-weight:700;color:#fff}
-.kpi .value.red{color:#ff6b6b}
 .kpi .value.green{color:#69db7c}
 .kpi .sub{font-size:11px;color:#5a6a80;margin-top:4px}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
@@ -31,11 +30,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .panel-title{font-size:14px;font-weight:600;color:#98a8be;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .pill{background:#1e2a3a;color:#42d4f5;font-size:11px;padding:2px 8px;border-radius:20px}
 .chart-wrap{position:relative;height:260px;overflow:hidden}
-/* Pure CSS Bar Chart */
-.bar-chart{display:flex;align-items:flex-end;height:100%;gap:6px;padding-bottom:28px;position:relative}
-/* Horizontal grid lines */
+.bar-chart{display:flex;align-items:flex-end;height:100%;gap:5px;padding-bottom:28px;position:relative}
 .bar-chart::before{content:'';position:absolute;left:0;right:0;bottom:28px;top:0;background:repeating-linear-gradient(to top,transparent,transparent 49px,#1a2235 49px,#1a2235 50px);pointer-events:none}
-/* Baseline */
 .bar-chart::after{content:'';position:absolute;left:0;right:0;bottom:28px;height:1px;background:#2a3a50;z-index:1}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;cursor:pointer;z-index:2}
 .bar-col:hover .bar-fill{opacity:.85}
@@ -43,12 +39,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .bar-label{position:absolute;bottom:-26px;font-size:10px;color:#5a6a80;white-space:nowrap;transform:rotate(-45deg);transform-origin:top left;overflow:hidden;max-width:100%}
 .bar-value{position:absolute;top:-18px;font-size:10px;color:#98a8be;white-space:nowrap;opacity:0;transition:opacity .15s}
 .bar-col:hover .bar-value{opacity:1}
-/* Line chart (pure CSS/SVG) */
-.line-chart{position:relative;height:230px}
-.line-chart svg{width:100%;height:100%}
-/* Stats */
-.stat{font-size:12px;color:#7a8ba8;margin-top:6px}
-.stat strong{color:#fff}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:8px 10px;background:#1a2540;color:#7a8ba8;font-weight:600;border-bottom:1px solid #2a3a50;font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0}
@@ -56,27 +46,23 @@ td{padding:8px 10px;border-bottom:1px solid #1a2235;color:#c8d4e8}
 tr:hover td{background:#1a2540}
 .qty{font-weight:700;color:#42d4f5}
 .rank{color:#5a6a80;width:32px}
-.cat-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;background:#1e2a3a;color:#98a8be}
-.chan-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+.cat-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;background:#1e2a3a;color:#98a8be;white-space:nowrap}
 .chan-row{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid #1a2235}
-.chan-name{flex:1;color:#c8d4e8;font-size:13px}
-.chan-qty{font-weight:700;color:#42d4f5;font-size:13px;min-width:60px;text-align:right}
-.chan-pct{color:#5a6a80;font-size:11px;min-width:40px;text-align:right}
+.chan-name{flex:1;color:#c8d4e8;font-size:13px;display:flex;align-items:center;gap:6px}
+.chan-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .chan-bar-bg{flex:2;height:4px;background:#1a2235;border-radius:2px;margin:0 10px}
 .chan-bar{height:4px;border-radius:2px;transition:width .6s ease}
-.chan-row:last-child{border-bottom:none}
-@media(max-width:900px){
-.kpi-grid{grid-template-columns:repeat(3,1fr)}
-.chart-row{grid-template-columns:1fr}
-}
+.chan-qty{font-weight:700;color:#42d4f5;font-size:13px;min-width:60px;text-align:right}
+.chan-pct{color:#5a6a80;font-size:11px;min-width:40px;text-align:right}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.chart-row{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 
-<!-- Password Gate -->
 <div id="gate" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh">
   <div style="background:#131c2e;border:1px solid #1e2a3a;border-radius:16px;padding:40px;max-width:360px;width:100%;text-align:center">
-    <div style="font-size:40px;margin-bottom:16px">🔒</div>
+    <div style="font-size:40px;margin-bottom:16px">&#x1f512;</div>
     <div style="font-size:18px;font-weight:700;margin-bottom:6px">华为穿戴备货看板</div>
     <div style="font-size:13px;color:#7a8ba8;margin-bottom:24px">输入密码查看</div>
     <input type="password" id="pwd" placeholder="输入密码..." onkeydown="if(event.key==='Enter')tryPwd()" style="width:100%;padding:12px 16px;border:1px solid #2a3a50;border-radius:8px;background:#0a0e1a;color:#e0e6f0;font-size:15px;text-align:center;outline:none;margin-bottom:12px">
@@ -85,24 +71,21 @@ tr:hover td{background:#1a2540}
   </div>
 </div>
 
-<!-- Main Dashboard -->
 <div id="main" class="hidden">
-
   <div class="title-bar">
-    <h1>📊 华为穿戴备货看板</h1>
-    <span style="color:#5a6a80;font-size:13px">2026年3月</span>
-    <div class="lock" id="lockUI">
-      <input type="password" id="unlockPwd" placeholder="输入密码锁定">
-      <button onclick="lockDash()" style="padding:5px 12px;border:1px solid #2a3a50;border-radius:6px;background:#1a2540;color:#7a8ba8;cursor:pointer;font-size:13px">🔒 锁定</button>
+    <h1>&#x1f4ca; 华为穿戴备货看板</h1>
+    <span class="sub">2026年3月 &middot; 30天</span>
+    <div class="lock-row">
+      <input type="password" id="unlockPwd" placeholder="锁定密码">
+      <button onclick="lockDash()">&#x1f512; 锁定</button>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab(this,'tab-data')">📦 当月数据</button>
-    <button class="tab" onclick="switchTab(this,'tab-forecast')">🔮 预测视图</button>
+    <button class="tab active" onclick="switchTab(this,'data')">&#x1f4e6; 当月数据</button>
+    <button class="tab" onclick="switchTab(this,'forecast')">&#x1f52e; 预测视图</button>
   </div>
 
-  <!-- KPI Cards -->
   <div class="kpi-grid">
     <div class="kpi"><div class="label">总出货量</div><div class="value" id="k-qty">-</div><div class="sub">台</div></div>
     <div class="kpi"><div class="label">总营收</div><div class="value" id="k-rev">-</div><div class="sub">万元</div></div>
@@ -111,25 +94,24 @@ tr:hover td{background:#1a2540}
     <div class="kpi"><div class="label">日均出货</div><div class="value" id="k-daily">-</div><div class="sub">台/天</div></div>
   </div>
 
-  <!-- Data Tab -->
-  <div id="tab-data">
+  <div id="panel-data">
     <div class="chart-row">
       <div class="panel">
-        <div class="panel-title">📅 日出货趋势（3月）<span class="pill">30天</span></div>
+        <div class="panel-title">&#x1f4c5; 日出货趋势（3月）<span class="pill">30天</span></div>
         <div class="chart-wrap"><div class="bar-chart" id="chart-daily"></div></div>
       </div>
       <div class="panel">
-        <div class="panel-title">📂 品类出货占比 <span class="pill" id="cat-pill">9个</span></div>
+        <div class="panel-title">&#x1f4c2; 品类出货占比 <span class="pill" id="cat-pill">9个</span></div>
         <div class="chart-wrap"><div class="bar-chart" id="chart-cats"></div></div>
       </div>
     </div>
     <div class="chart-row">
       <div class="panel">
-        <div class="panel-title">🏪 渠道出货占比 <span class="pill" id="chan-pill">3个</span></div>
+        <div class="panel-title">&#x1f3ea; 渠道出货占比 <span class="pill" id="chan-pill">3个</span></div>
         <div class="chart-wrap" id="chan-list"></div>
       </div>
       <div class="panel">
-        <div class="panel-title">🔥 热销产品 TOP 10 <span class="pill">销量排行</span></div>
+        <div class="panel-title">&#x1f525; 热销产品 TOP 10 <span class="pill">销量排行</span></div>
         <div class="tbl-wrap" style="max-height:260px;overflow-y:auto">
           <table>
             <thead><tr><th class="rank">#</th><th>产品</th><th>品类</th><th>销量</th><th>占比</th></tr></thead>
@@ -139,7 +121,7 @@ tr:hover td{background:#1a2540}
       </div>
     </div>
     <div class="panel">
-      <div class="panel-title">🛍️ 产品明细 <span class="pill" id="prod-pill">20个</span></div>
+      <div class="panel-title">&#x1f6cd; 产品明细 <span class="pill" id="prod-pill">16个</span></div>
       <div class="tbl-wrap" style="max-height:360px;overflow-y:auto">
         <table>
           <thead><tr><th class="rank">#</th><th>产品</th><th>品类</th><th>渠道</th><th>销量</th><th>营收(万)</th><th>利润(万)</th></tr></thead>
@@ -149,22 +131,21 @@ tr:hover td{background:#1a2540}
     </div>
   </div>
 
-  <!-- Forecast Tab -->
-  <div id="tab-forecast" class="hidden">
+  <div id="panel-forecast" class="hidden">
     <div class="kpi-grid" style="margin-bottom:16px">
-      <div class="kpi"><div class="label">3月实际出货</div><div class="value" id="f-real">-</div><div class="sub">台</div></div>
-      <div class="kpi"><div class="label">预测4月出货</div><div class="value" id="f-p4">-</div><div class="sub">台</div></div>
-      <div class="kpi"><div class="label">预测5月出货</div><div class="value" id="f-p5">-</div><div class="sub">台</div></div>
-      <div class="kpi"><div class="label">预测6月出货</div><div class="value" id="f-p6">-</div><div class="sub">台</div></div>
-      <div class="kpi"><div class="label">618备货参考</div><div class="value" id="f-618">-</div><div class="sub">台（5月×1.3）</div></div>
+      <div class="kpi"><div class="label">3月实际</div><div class="value" id="f-real">-</div><div class="sub">台</div></div>
+      <div class="kpi"><div class="label">4月预测</div><div class="value" id="f-p4">-</div><div class="sub">台</div></div>
+      <div class="kpi"><div class="label">5月预测</div><div class="value" id="f-p5">-</div><div class="sub">台</div></div>
+      <div class="kpi"><div class="label">6月预测</div><div class="value" id="f-p6">-</div><div class="sub">台</div></div>
+      <div class="kpi"><div class="label">618备货参考</div><div class="value" id="f-618">-</div><div class="sub">台(5月×1.3)</div></div>
     </div>
     <div class="chart-row">
       <div class="panel">
-        <div class="panel-title">📈 月度趋势预测</div>
+        <div class="panel-title">&#x1f4c8; 月度趋势预测</div>
         <div class="chart-wrap"><div class="bar-chart" id="chart-forecast"></div></div>
       </div>
       <div class="panel">
-        <div class="panel-title">📂 品类4月预测 <span class="pill">9个品类</span></div>
+        <div class="panel-title">&#x1f4c2; 品类4月预测 <span class="pill">9个品类</span></div>
         <div class="chart-wrap"><div class="bar-chart" id="chart-fcats"></div></div>
       </div>
     </div>
@@ -172,27 +153,13 @@ tr:hover td{background:#1a2540}
 </div>
 
 <script>
-var PERIODS = [{"cats":[["Watch FIT 4",{"qty":2351,"rev":175.43,"profit":16.71,"rate":0.0953}],["华为 Watch GT6",{"qty":1725,"rev":179.93,"profit":22.37,"rate":0.1243}],["华为 WATCH 5",{"qty":599,"rev":104.52,"profit":8.36,"rate":0.08}],["华为 Watch GT6 Pro",{"qty":413,"rev":73.12,"profit":5.96,"rate":0.0815}],["华为 WATCH 5 Pro",{"qty":265,"rev":72.73,"profit":6.28,"rate":0.0864}],["华为 WATCH Ultimate",{"qty":188,"rev":55.37,"profit":4.32,"rate":0.078}],["华为 WATCH 4 Pro",{"qty":93,"rev":13.95,"profit":0.98,"rate":0.0703}],["Watch GT 5 Pro",{"qty":65,"rev":9.75,"profit":0.87,"rate":0.0892}],["华为 WATCH D",{"qty":55,"rev":8.03,"profit":0.63,"rate":0.0785}]],"chans":[["华为比特专卖",{"qty":4961,"rev":593.96,"profit":59.27,"rate":0.0998}],["拼多多平台",{"qty":637,"rev":84.52,"profit":6.31,"rate":0.0747}],["华为思行汇数",{"qty":156,"rev":15.35,"profit":1.9,"rate":0.1238}]],"prods":[{"name":"Watch FIT 4 幻夜黑","cat":"Watch FIT 4","chan":"华为比特专卖","qty":1415,"rev":104.73,"profit":9.98},{"name":"Watch FIT 4 星光金","cat":"Watch FIT 4","chan":"华为比特专卖","qty":599,"rev":44.34,"profit":4.23},{"name":"Watch FIT 4 幻夜黑","cat":"Watch FIT 4","chan":"拼多多平台","qty":337,"rev":26.36,"profit":2.5},{"name":"华为 Watch GT6 曜石黑","cat":"华为 Watch GT6","chan":"华为比特专卖","qty":1241,"rev":131.15,"profit":16.35},{"name":"华为 Watch GT6 托帕蓝","cat":"华为 Watch GT6","chan":"华为比特专卖","qty":484,"rev":48.78,"profit":6.02},{"name":"华为 WATCH 5 曜石黑","cat":"华为 WATCH 5","chan":"华为比特专卖","qty":325,"rev":58.93,"profit":4.71},{"name":"华为 Watch GT6 Pro 曜石黑","cat":"华为 Watch GT6 Pro","chan":"华为比特专卖","qty":413,"rev":73.12,"profit":5.96},{"name":"华为 WATCH 5 晨曦金","cat":"华为 WATCH 5","chan":"华为比特专卖","qty":274,"rev":45.59,"profit":3.65},{"name":"华为 WATCH 5 Pro 曜石黑","cat":"华为 WATCH 5 Pro","chan":"华为比特专卖","qty":176,"rev":48.86,"profit":4.22},{"name":"华为 WATCH 5 曜石黑","cat":"华为 WATCH 5","chan":"拼多多平台","qty":274,"rev":45.59,"profit":3.65},{"name":"华为 WATCH Ultimate 钛金属","cat":"华为 WATCH Ultimate","chan":"华为比特专卖","qty":188,"rev":55.37,"profit":4.32},{"name":"华为 WATCH 5 Pro 晨曦金","cat":"华为 WATCH 5 Pro","chan":"华为比特专卖","qty":89,"rev":23.87,"profit":2.06},{"name":"华为 WATCH 4 Pro 曜石黑","cat":"华为 WATCH 4 Pro","chan":"华为比特专卖","qty":93,"rev":13.95,"profit":0.98},{"name":"华为 WATCH 5 Pro 曜石黑","cat":"华为 WATCH 5 Pro","chan":"拼多多平台","qty":89,"rev":23.87,"profit":2.06},{"name":"Watch GT 5 Pro 曜石黑","cat":"Watch GT 5 Pro","chan":"华为比特专卖","qty":65,"rev":9.75,"profit":0.87},{"name":"华为 WATCH 5 Pro 晨曦金","cat":"华为 WATCH 5 Pro","chan":"拼多多平台","qty":89,"rev":23.87,"profit":2.06},{"name":"华为 WATCH D","cat":"华为 WATCH D","chan":"华为比特专卖","qty":55,"rev":8.03,"profit":0.63},{"name":"华为 WATCH Ultimate 钛金属","cat":"华为 WATCH Ultimate","chan":"华为思行汇数","qty":188,"rev":55.37,"profit":4.32},{"name":"华为 WATCH 5 晨曦金","cat":"华为 WATCH 5","chan":"拼多多平台","qty":274,"rev":45.59,"profit":3.65},{"name":"Watch FIT 4 幻夜黑","cat":"Watch FIT 4","chan":"华为思行汇数","qty":188,"rev":14.26,"profit":1.36}]],"daily":[{"date":"03-01","qty":258},{"date":"03-02","qty":195},{"date":"03-03","qty":188},{"date":"03-04","qty":212},{"date":"03-05","qty":201},{"date":"03-06","qty":234},{"date":"03-07","qty":156},{"date":"03-08","qty":212},{"date":"03-09","qty":198},{"date":"03-10","qty":189},{"date":"03-11","qty":176},{"date":"03-12","qty":189},{"date":"03-13","qty":212},{"date":"03-14","qty":145},{"date":"03-15","qty":189},{"date":"03-16","qty":201},{"date":"03-17","qty":212},{"date":"03-18","qty":198},{"date":"03-19","qty":176},{"date":"03-20","qty":189},{"date":"03-21","qty":212},{"date":"03-22","qty":145},{"date":"03-23","qty":189},{"date":"03-24","qty":234},{"date":"03-25","qty":212},{"date":"03-26","qty":189},{"date":"03-27","qty":212},{"date":"03-28","qty":198},{"date":"03-29","qty":176},{"date":"03-30","qty":189}],"trend":[{"date":"03-01","华为 Watch GT6 曜石黑":1241,"华为 WATCH 5 Pro 晨曦金":89,"华为 WATCH 5 曜石黑":325,"华为 WATCH 5 晨曦金":274,"华为 WATCH 5 Pro 曜石黑":176,"华为 Watch GT6 Pro 曜石黑":413,"华为 WATCH Ultimate 钛金属":188,"华为 WATCH 4 Pro 曜石黑":93,"Watch GT 5 Pro 曜石黑":65,"华为 WATCH D":55,"Watch FIT 4 幻夜黑":1415,"Watch FIT 4 星光金":599,"华为 WATCH 5 曜石黑 拼":274,"华为 WATCH 5 Pro 曜石黑 拼":89}]};
+var PERIODS = [{"cats": [["Watch FIT 4", {"qty": 2351, "rev": 175.43, "profit": 16.71, "rate": 0.0953}], ["\u534e\u4e3a Watch GT6", {"qty": 1725, "rev": 179.93, "profit": 22.37, "rate": 0.1243}], ["\u534e\u4e3a WATCH 5", {"qty": 599, "rev": 104.52, "profit": 8.36, "rate": 0.08}], ["\u534e\u4e3a Watch GT6 Pro", {"qty": 413, "rev": 73.12, "profit": 5.96, "rate": 0.0815}], ["\u534e\u4e3a WATCH 5 Pro", {"qty": 265, "rev": 72.73, "profit": 6.28, "rate": 0.0864}], ["\u534e\u4e3a WATCH Ultimate", {"qty": 188, "rev": 55.37, "profit": 4.32, "rate": 0.078}], ["\u534e\u4e3a WATCH 4 Pro", {"qty": 93, "rev": 13.95, "profit": 0.98, "rate": 0.0703}], ["Watch GT 5 Pro", {"qty": 65, "rev": 9.75, "profit": 0.87, "rate": 0.0892}], ["\u534e\u4e3a WATCH D", {"qty": 55, "rev": 8.03, "profit": 0.63, "rate": 0.0785}]], "chans": [["\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", {"qty": 4961, "rev": 593.96, "profit": 59.27, "rate": 0.0998}], ["\u62fc\u591a\u591a\u5e73\u53f0", {"qty": 637, "rev": 84.52, "profit": 6.31, "rate": 0.0747}], ["\u534e\u4e3a\u601d\u884c\u6c47\u6570", {"qty": 156, "rev": 15.35, "profit": 1.9, "rate": 0.1238}]], "prods": [{"name": "Watch FIT 4 \u5e7b\u591c\u9ed1", "cat": "Watch FIT 4", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 1415, "rev": 104.73, "profit": 9.98}, {"name": "Watch FIT 4 \u661f\u5149\u91d1", "cat": "Watch FIT 4", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 599, "rev": 44.34, "profit": 4.23}, {"name": "Watch FIT 4 \u5e7b\u591c\u9ed1", "cat": "Watch FIT 4", "chan": "\u62fc\u591a\u591a\u5e73\u53f0", "qty": 337, "rev": 26.36, "profit": 2.5}, {"name": "\u534e\u4e3a Watch GT6 \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a Watch GT6", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 1241, "rev": 131.15, "profit": 16.35}, {"name": "\u534e\u4e3a Watch GT6 \u6258\u5e15\u84dd", "cat": "\u534e\u4e3a Watch GT6", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 484, "rev": 48.78, "profit": 6.02}, {"name": "\u534e\u4e3a WATCH 5 \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a WATCH 5", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 325, "rev": 58.93, "profit": 4.71}, {"name": "\u534e\u4e3a Watch GT6 Pro \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a Watch GT6 Pro", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 413, "rev": 73.12, "profit": 5.96}, {"name": "\u534e\u4e3a WATCH 5 \u6668\u66e6\u91d1", "cat": "\u534e\u4e3a WATCH 5", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 274, "rev": 45.59, "profit": 3.65}, {"name": "\u534e\u4e3a WATCH 5 Pro \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a WATCH 5 Pro", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 176, "rev": 48.86, "profit": 4.22}, {"name": "\u534e\u4e3a WATCH 5 \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a WATCH 5", "chan": "\u62fc\u591a\u591a\u5e73\u53f0", "qty": 274, "rev": 45.59, "profit": 3.65}, {"name": "\u534e\u4e3a WATCH Ultimate \u949b\u91d1\u5c5e", "cat": "\u534e\u4e3a WATCH Ultimate", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 188, "rev": 55.37, "profit": 4.32}, {"name": "\u534e\u4e3a WATCH 5 Pro \u6668\u66e6\u91d1", "cat": "\u534e\u4e3a WATCH 5 Pro", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 89, "rev": 23.87, "profit": 2.06}, {"name": "\u534e\u4e3a WATCH 4 Pro \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a WATCH 4 Pro", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 93, "rev": 13.95, "profit": 0.98}, {"name": "\u534e\u4e3a WATCH 5 Pro \u66dc\u77f3\u9ed1", "cat": "\u534e\u4e3a WATCH 5 Pro", "chan": "\u62fc\u591a\u591a\u5e73\u53f0", "qty": 89, "rev": 23.87, "profit": 2.06}, {"name": "Watch GT 5 Pro \u66dc\u77f3\u9ed1", "cat": "Watch GT 5 Pro", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 65, "rev": 9.75, "profit": 0.87}, {"name": "\u534e\u4e3a WATCH D", "cat": "\u534e\u4e3a WATCH D", "chan": "\u534e\u4e3a\u6bd4\u7279\u4e13\u5356", "qty": 55, "rev": 8.03, "profit": 0.63}], "daily": [{"date": "03-01", "qty": 258}, {"date": "03-02", "qty": 195}, {"date": "03-03", "qty": 188}, {"date": "03-04", "qty": 212}, {"date": "03-05", "qty": 201}, {"date": "03-06", "qty": 234}, {"date": "03-07", "qty": 156}, {"date": "03-08", "qty": 212}, {"date": "03-09", "qty": 198}, {"date": "03-10", "qty": 189}, {"date": "03-11", "qty": 176}, {"date": "03-12", "qty": 189}, {"date": "03-13", "qty": 212}, {"date": "03-14", "qty": 145}, {"date": "03-15", "qty": 189}, {"date": "03-16", "qty": 201}, {"date": "03-17", "qty": 212}, {"date": "03-18", "qty": 198}, {"date": "03-19", "qty": 176}, {"date": "03-20", "qty": 189}, {"date": "03-21", "qty": 212}, {"date": "03-22", "qty": 145}, {"date": "03-23", "qty": 189}, {"date": "03-24", "qty": 234}, {"date": "03-25", "qty": 212}, {"date": "03-26", "qty": 189}, {"date": "03-27", "qty": 212}, {"date": "03-28", "qty": 198}, {"date": "03-29", "qty": 176}, {"date": "03-30", "qty": 189}]}];
+var DAILY_LABELS = ["03-01", "03-02", "03-03", "03-04", "03-05", "03-06", "03-07", "03-08", "03-09", "03-10", "03-11", "03-12", "03-13", "03-14", "03-15", "03-16", "03-17", "03-18", "03-19", "03-20", "03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"];
+var DAILY_VALS = [258, 195, 188, 212, 201, 234, 156, 212, 198, 189, 176, 189, 212, 145, 189, 201, 212, 198, 176, 189, 212, 145, 189, 234, 212, 189, 212, 198, 176, 189];
+var COLORS = ["#42d4f5", "#c678dd", "#e06c75", "#98c379", "#e5c07b", "#61afef", "#d19a66", "#56b6c2"];
+var CHAN_COLORS = ["#42d4f5", "#c678dd", "#98c379"];
 
-var FORECAST = [{"month":"3月实际","qty":5754,"isReal":true},{"month":"4月预测","qty":null,"isReal":false},{"month":"5月预测","qty":null,"isReal":false},{"month":"6月预测","qty":null,"isReal":false}];
-
-var DAILY_LABELS = ["03-01","03-02","03-03","03-04","03-05","03-06","03-07","03-08","03-09","03-10","03-11","03-12","03-13","03-14","03-15","03-16","03-17","03-18","03-19","03-20","03-21","03-22","03-23","03-24","03-25","03-26","03-27","03-28","03-29","03-30"];
-var DAILY_VALS = [258,195,188,212,201,234,156,212,198,189,176,189,212,145,189,201,212,198,176,189,212,145,189,234,212,189,212,198,176,189];
-var DAILY_MAX = 258;
-
-var T5T = [{"date":"03-01","华为 Watch GT6 曜石黑":41,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":11,"华为 WATCH 5 晨曦金":9,"华为 WATCH 5 Pro 曜石黑":6,"华为 Watch GT6 Pro 曜石黑":14,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":47,"Watch FIT 4 星光金":20,"华为 WATCH 5 曜石黑(拼多多)":9,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-02","华为 Watch GT6 曜石黑":31,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-03","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-04","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-05","华为 Watch GT6 曜石黑":32,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-06","华为 Watch GT6 曜石黑":37,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":10,"华为 WATCH 5 晨曦金":9,"华为 WATCH 5 Pro 曜石黑":6,"华为 Watch GT6 Pro 曜石黑":13,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":42,"Watch FIT 4 星光金":18,"华为 WATCH 5 曜石黑(拼多多)":9,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-07","华为 Watch GT6 曜石黑":25,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":7,"华为 WATCH 5 晨曦金":6,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":8,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":28,"Watch FIT 4 星光金":12,"华为 WATCH 5 曜石黑(拼多多)":6,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-08","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-09","华为 Watch GT6 曜石黑":32,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-10","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-11","华为 Watch GT6 曜石黑":28,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":7,"华为 WATCH 5 晨曦金":6,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":9,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":31,"Watch FIT 4 星光金":13,"华为 WATCH 5 曜石黑(拼多多)":6,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-12","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-13","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-14","华为 Watch GT6 曜石黑":23,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":6,"华为 WATCH 5 晨曦金":5,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":7,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":1,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":26,"Watch FIT 4 星光金":11,"华为 WATCH 5 曜石黑(拼多多)":5,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-15","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-16","华为 Watch GT6 曜石黑":32,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-17","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-18","华为 Watch GT6 曜石黑":32,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-19","华为 Watch GT6 曜石黑":28,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":7,"华为 WATCH 5 晨曦金":6,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":9,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":31,"Watch FIT 4 星光金":13,"华为 WATCH 5 曜石黑(拼多多)":6,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-20","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-21","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-22","华为 Watch GT6 曜石黑":23,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":6,"华为 WATCH 5 晨曦金":5,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":7,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":1,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":26,"Watch FIT 4 星光金":11,"华为 WATCH 5 曜石黑(拼多多)":5,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-23","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-24","华为 Watch GT6 曜石黑":37,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":10,"华为 WATCH 5 晨曦金":9,"华为 WATCH 5 Pro 曜石黑":6,"华为 Watch GT6 Pro 曜石黑":13,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":42,"Watch FIT 4 星光金":18,"华为 WATCH 5 曜石黑(拼多多)":9,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-25","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-26","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-27","华为 Watch GT6 曜石黑":34,"华为 WATCH 5 Pro 晨曦金":3,"华为 WATCH 5 曜石黑":9,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":12,"华为 WATCH Ultimate 钛金属":6,"华为 WATCH 4 Pro 曜石黑":3,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":38,"Watch FIT 4 星光金":16,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":3},{"date":"03-28","华为 Watch GT6 曜石黑":32,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":8,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":11,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":36,"Watch FIT 4 星光金":15,"华为 WATCH 5 曜石黑(拼多多)":8,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-29","华为 Watch GT6 曜石黑":28,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":7,"华为 WATCH 5 晨曦金":6,"华为 WATCH 5 Pro 曜石黑":4,"华为 Watch GT6 Pro 曜石黑":9,"华为 WATCH Ultimate 钛金属":4,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":1,"华为 WATCH D":1,"Watch FIT 4 幻夜黑":31,"Watch FIT 4 星光金":13,"华为 WATCH 5 曜石黑(拼多多)":6,"华为 WATCH 5 Pro 曜石黑(拼多多)":2},{"date":"03-30","华为 Watch GT6 曜石黑":30,"华为 WATCH 5 Pro 晨曦金":2,"华为 WATCH 5 曜石黑":8,"华为 WATCH 5 晨曦金":7,"华为 WATCH 5 Pro 曜石黑":5,"华为 Watch GT6 Pro 曜石黑":10,"华为 WATCH Ultimate 钛金属":5,"华为 WATCH 4 Pro 曜石黑":2,"Watch GT 5 Pro 曜石黑":2,"华为 WATCH D":2,"Watch FIT 4 幻夜黑":34,"Watch FIT 4 星光金":14,"华为 WATCH 5 曜石黑(拼多多)":7,"华为 WATCH 5 Pro 曜石黑(拼多多)":2}];
-var T5T_PRODS = ["华为 Watch GT6 曜石黑","华为 WATCH 5 Pro 晨曦金","华为 WATCH 5 曜石黑","华为 WATCH 5 晨曦金","华为 WATCH 5 Pro 曜石黑","华为 Watch GT6 Pro 曜石黑","华为 WATCH Ultimate 钛金属","华为 WATCH 4 Pro 曜石黑","Watch GT 5 Pro 曜石黑","华为 WATCH D","Watch FIT 4 幻夜黑","Watch FIT 4 星光金","华为 WATCH 5 曜石黑(拼多多)","华为 WATCH 5 Pro 曜石黑(拼多多)"];
-var T5T_MAX = 47;
-
-var T5T_TOTAL = [196,149,143,162,153,179,119,162,151,144,134,144,162,111,144,153,162,151,134,144,162,111,144,179,162,144,162,151,134,144];
-
-// Colors
-var COLORS=['#42d4f5','#c678dd','#e06c75','#98c379','#e5c07b','#61afef','#d19a66','#56b6c2','#c678dd','#e06c75','#98c379','#e5c07b','#61afef','#d19a66'];
-var CHAN_COLORS=['#42d4f5','#c678dd','#98c379'];
-
-// Password
 var PWD = 'huawei2026';
-var locked = false;
 
 function tryPwd() {
   var v = document.getElementById('pwd').value;
@@ -211,259 +178,174 @@ function tryPwd() {
 function lockDash() {
   var v = document.getElementById('unlockPwd').value;
   if (v === PWD) {
-    locked = false;
-    document.getElementById('main').classList.remove('hidden');
+    document.getElementById('main').classList.add('hidden');
     document.getElementById('gate').style.display = 'flex';
     document.getElementById('pwd').value = '';
     document.getElementById('unlockPwd').value = '';
-  } else {
-    alert('密码错误');
   }
 }
 
 function switchTab(btn, id) {
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
   btn.classList.add('active');
-  document.getElementById('tab-data').classList.toggle('hidden', id !== 'tab-data');
-  document.getElementById('tab-forecast').classList.toggle('hidden', id !== 'tab-forecast');
+  document.getElementById('panel-data').classList.toggle('hidden', id !== 'data');
+  document.getElementById('panel-forecast').classList.toggle('hidden', id !== 'forecast');
 }
 
-// Pure CSS bar chart renderer
-function renderBarChart(containerId, data, maxVal, colorFn, labelKey, valueKey, unit) {
-  var el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = '';
-  data.forEach(function(item, i) {
-    var label = item[labelKey || 0];
-    var val = item[valueKey || 1];
-    var col = document.createElement('div');
-    col.className = 'bar-col';
-    var pct = maxVal > 0 ? (val / maxVal * 100).toFixed(1) : 0;
-    col.innerHTML =
-      '<div class="bar-value">' + val.toLocaleString() + (unit||'') + '</div>' +
-      '<div class="bar-fill" style="height:' + pct + '%;background:' + colorFn(i, val) + '"></div>' +
-      '<div class="bar-label">' + label + '</div>';
-    el.appendChild(col);
-  });
-}
-
-// Render daily bar chart
-function renderDailyChart() {
-  var el = document.getElementById('chart-daily');
-  el.innerHTML = '';
-  var max = Math.max.apply(null, DAILY_VALS);
-  DAILY_VALS.forEach(function(v, i) {
-    var pct = (v / max * 100).toFixed(1);
-    var col = document.createElement('div');
-    col.className = 'bar-col';
-    col.innerHTML =
-      '<div class="bar-value">' + v + '</div>' +
-      '<div class="bar-fill" style="height:' + pct + '%;background:linear-gradient(to top,#42d4f5,#61afef)"></div>' +
-      '<div class="bar-label">' + DAILY_LABELS[i] + '</div>';
-    el.appendChild(col);
-  });
-}
-
-// Render category bar chart
-function renderCatsChart() {
-  var cats = PERIODS[0].cats;
-  var cats_sorted = cats.slice().sort(function(a,b){ return b[1].qty - a[1].qty; });
-  document.getElementById('cat-pill').textContent = cats_sorted.length + '个';
-  var max = cats_sorted[0][1].qty;
-  var el = document.getElementById('chart-cats');
-  el.innerHTML = '';
-  cats_sorted.forEach(function(item, i) {
-    var pct = (item[1].qty / max * 100).toFixed(1);
-    var col = document.createElement('div');
-    col.className = 'bar-col';
-    col.innerHTML =
-      '<div class="bar-value">' + item[1].qty + '</div>' +
-      '<div class="bar-fill" style="height:' + pct + '%;background:' + COLORS[i % COLORS.length] + '"></div>' +
-      '<div class="bar-label" title="' + item[0] + '">' + item[0].replace('华为 ','').replace('Watch ','W.') + '</div>';
-    el.appendChild(col);
-  });
-}
-
-// Render channel bars
-function renderChanChart() {
-  var chans = PERIODS[0].chans;
-  var total = chans.reduce(function(s, c){ return s + c[1].qty; }, 0);
-  var el = document.getElementById('chan-list');
-  el.innerHTML = '';
-  chans.forEach(function(item, i) {
-    var pct = (item[1].qty / total * 100).toFixed(1);
-    var row = document.createElement('div');
-    row.className = 'chan-row';
-    row.innerHTML =
-      '<div class="chan-name"><span class="chan-dot" style="background:' + CHAN_COLORS[i] + '"></span>' + item[0] + '</div>' +
-      '<div class="chan-bar-bg"><div class="chan-bar" style="width:' + pct + '%;background:' + CHAN_COLORS[i] + '"></div></div>' +
-      '<div class="chan-qty">' + item[1].qty.toLocaleString() + '</div>' +
-      '<div class="chan-pct">' + pct + '%</div>';
-    el.appendChild(row);
-  });
-}
-
-// Render product table
-function renderProds() {
-  var prods = PERIODS[0].prods;
-  var cats = PERIODS[0].cats;
-  var total = prods.reduce(function(s, p){ return s + p.qty; }, 0);
-  // Group by product name to dedupe
-  var seen = {};
-  var unique = [];
-  prods.forEach(function(p) {
-    var key = p.name + '|' + p.chan;
-    if (!seen[key]) { seen[key] = true; unique.push(p); }
-  });
-  // Sort by qty desc
-  unique.sort(function(a,b){ return b.qty - a.qty; });
-  document.getElementById('prod-pill').textContent = unique.length + '个';
-  var tbody = document.getElementById('prod-tbody');
-  tbody.innerHTML = '';
-  unique.forEach(function(p, i) {
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td class="rank">' + (i+1) + '</td>' +
-      '<td>' + p.name + '</td>' +
-      '<td><span class="cat-badge">' + p.cat.replace('华为 ','').replace('Watch ','W.') + '</span></td>' +
-      '<td>' + p.chan.replace('华为比特专卖','比特').replace('华为思行汇数','思行汇').replace('拼多多平台','拼多多') + '</td>' +
-      '<td class="qty">' + p.qty.toLocaleString() + '</td>' +
-      '<td>' + p.rev.toFixed(1) + '</td>' +
-      '<td style="color:#69db7c">' + p.profit.toFixed(2) + '</td>';
-    tbody.appendChild(tr);
-  });
-}
-
-// Render top10
-function renderTop10() {
-  var prods = PERIODS[0].prods;
-  var total = prods.reduce(function(s, p){ return s + p.qty; }, 0);
-  var seen = {};
-  var unique = [];
-  prods.forEach(function(p) {
-    var key = p.name;
-    if (!seen[key]) {
-      seen[key] = true;
-      unique.push({name: p.name, cat: p.cat, qty: 0});
-    }
-  });
-  prods.forEach(function(p) {
-    unique.forEach(function(u){ if(u.name === p.name) u.qty += p.qty; });
-  });
-  unique.sort(function(a,b){ return b.qty - a.qty; });
-  var top = unique.slice(0, 10);
-  var tbody = document.getElementById('top10-tbody');
-  tbody.innerHTML = '';
-  top.forEach(function(p, i) {
-    var pct = (p.qty / total * 100).toFixed(1);
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td class="rank">' + (i+1) + '</td>' +
-      '<td>' + p.name + '</td>' +
-      '<td><span class="cat-badge">' + p.cat.replace('华为 ','').replace('Watch ','W.') + '</span></td>' +
-      '<td class="qty">' + p.qty.toLocaleString() + '</td>' +
-      '<td>' + pct + '%</td>';
-    tbody.appendChild(tr);
-  });
-}
-
-// Render KPI
-function renderKPI() {
+function renderAll() {
   var cats = PERIODS[0].cats;
   var chans = PERIODS[0].chans;
   var prods = PERIODS[0].prods;
   var daily = PERIODS[0].daily;
-  var totalQty = cats.reduce(function(s,c){ return s+c[1].qty; }, 0);
-  var totalRev = cats.reduce(function(s,c){ return s+c[1].rev; }, 0);
-  var totalProfit = cats.reduce(function(s,c){ return s+c[1].profit; }, 0);
-  var days = daily.length;
-  var seen = {}; var uniq = 0;
-  prods.forEach(function(p){ if(!seen[p.name]){ seen[p.name]=true; uniq++; }});
+
+  var totalQty = 0, totalRev = 0, totalProfit = 0;
+  cats.forEach(function(c){ totalQty += c[1].qty; totalRev += c[1].rev; totalProfit += c[1].profit; });
+  var seenProds = {};
+  prods.forEach(function(p){ seenProds[p.name] = true; });
   document.getElementById('k-qty').textContent = totalQty.toLocaleString();
   document.getElementById('k-rev').textContent = totalRev.toFixed(0);
   document.getElementById('k-profit').textContent = totalProfit.toFixed(0);
-  document.getElementById('k-prods').textContent = uniq;
-  document.getElementById('k-daily').textContent = Math.round(totalQty / days);
-}
+  document.getElementById('k-prods').textContent = Object.keys(seenProds).length;
+  document.getElementById('k-daily').textContent = Math.round(totalQty / daily.length);
 
-// Render forecast
-function renderForecast() {
-  var cats = PERIODS[0].cats;
-  var total3 = cats.reduce(function(s,c){ return s+c[1].qty; }, 0);
-  var p4 = Math.round(total3 * 0.95);
-  var p5 = Math.round(total3 * 0.90);
-  var p6 = Math.round(total3 * 1.05);
+  // Daily bar chart
+  var maxD = Math.max.apply(null, DAILY_VALS);
+  var dc = document.getElementById('chart-daily');
+  dc.innerHTML = '';
+  DAILY_VALS.forEach(function(v, i) {
+    var pct = (v / maxD * 100).toFixed(1);
+    var col = document.createElement('div');
+    col.className = 'bar-col';
+    col.innerHTML = '<div class="bar-value">' + v + '</div>' +
+      '<div class="bar-fill" style="height:' + pct + '%;background:linear-gradient(to top,#42d4f5,#61afef)"></div>' +
+      '<div class="bar-label">' + DAILY_LABELS[i] + '</div>';
+    dc.appendChild(col);
+  });
+
+  // Category bar chart
+  var catsSorted = cats.slice().sort(function(a,b){ return b[1].qty - a[1].qty; });
+  document.getElementById('cat-pill').textContent = catsSorted.length + '\u4e2a';
+  var maxC = catsSorted[0][1].qty;
+  var cc = document.getElementById('chart-cats');
+  cc.innerHTML = '';
+  catsSorted.forEach(function(item, i) {
+    var pct = (item[1].qty / maxC * 100).toFixed(1);
+    var col = document.createElement('div');
+    col.className = 'bar-col';
+    col.innerHTML = '<div class="bar-value">' + item[1].qty + '</div>' +
+      '<div class="bar-fill" style="height:' + pct + '%;background:' + COLORS[i % COLORS.length] + '"></div>' +
+      '<div class="bar-label" title="' + item[0] + '">' + item[0].replace('\u534e\u4e3a ','').replace('Watch ','W.') + '</div>';
+    cc.appendChild(col);
+  });
+
+  // Channel bars
+  var totalC = chans.reduce(function(s,c){ return s+c[1].qty; }, 0);
+  var cl = document.getElementById('chan-list');
+  cl.innerHTML = '';
+  chans.forEach(function(item, i) {
+    var pct = (item[1].qty / totalC * 100).toFixed(1);
+    var row = document.createElement('div');
+    row.className = 'chan-row';
+    row.innerHTML = '<div class="chan-name"><span class="chan-dot" style="background:' + CHAN_COLORS[i] + '"></span>' + item[0] + '</div>' +
+      '<div class="chan-bar-bg"><div class="chan-bar" style="width:' + pct + '%;background:' + CHAN_COLORS[i] + '"></div></div>' +
+      '<div class="chan-qty">' + item[1].qty.toLocaleString() + '</div>' +
+      '<div class="chan-pct">' + pct + '%</div>';
+    cl.appendChild(row);
+  });
+
+  // Top 10 table
+  var byName = {};
+  prods.forEach(function(p){ if(!byName[p.name]) byName[p.name] = {name:p.name, cat:p.cat, qty:0}; byName[p.name].qty += p.qty; });
+  var top10 = Object.values(byName).sort(function(a,b){ return b.qty - a.qty; }).slice(0,10);
+  var gt = document.getElementById('top10-tbody');
+  gt.innerHTML = '';
+  top10.forEach(function(p, i) {
+    var pct = (p.qty / totalQty * 100).toFixed(1);
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="rank">' + (i+1) + '</td><td>' + p.name + '</td>' +
+      '<td><span class="cat-badge">' + p.cat.replace('\u534e\u4e3a ','').replace('Watch ','W.') + '</span></td>' +
+      '<td class="qty">' + p.qty.toLocaleString() + '</td><td>' + pct + '%</td>';
+    gt.appendChild(tr);
+  });
+
+  // Product detail table
+  var uniqProds = [];
+  var seenP = {};
+  prods.forEach(function(p) {
+    var key = p.name + '|' + p.chan;
+    if (!seenP[key]) { seenP[key] = true; uniqProds.push(p); }
+  });
+  uniqProds.sort(function(a,b){ return b.qty - a.qty; });
+  document.getElementById('prod-pill').textContent = uniqProds.length + '\u4e2a';
+  var pt = document.getElementById('prod-tbody');
+  pt.innerHTML = '';
+  uniqProds.forEach(function(p, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="rank">' + (i+1) + '</td><td>' + p.name + '</td>' +
+      '<td><span class="cat-badge">' + p.cat.replace('\u534e\u4e3a ','').replace('Watch ','W.') + '</span></td>' +
+      '<td>' + p.chan.replace('\u534e\u4e3a\u6bd4\u7279\u4e13\u5356','\u6bd4\u7279').replace('\u534e\u4e3a\u601d\u884c\u6c47\u6570','\u601d\u884c\u6c47').replace('\u62c9\u5b9d\u5e73\u53f0','\u62c9\u5b9d') + '</td>' +
+      '<td class="qty">' + p.qty.toLocaleString() + '</td>' +
+      '<td>' + p.rev.toFixed(1) + '</td>' +
+      '<td style="color:#69db7c">' + p.profit.toFixed(2) + '</td>';
+    pt.appendChild(tr);
+  });
+
+  // Forecast
+  var p4 = Math.round(totalQty * 0.95);
+  var p5 = Math.round(totalQty * 0.90);
+  var p6 = Math.round(totalQty * 1.05);
   var r618 = Math.round(p5 * 1.3);
-  document.getElementById('f-real').textContent = total3.toLocaleString();
+  document.getElementById('f-real').textContent = totalQty.toLocaleString();
   document.getElementById('f-p4').textContent = p4.toLocaleString();
   document.getElementById('f-p5').textContent = p5.toLocaleString();
   document.getElementById('f-p6').textContent = p6.toLocaleString();
   document.getElementById('f-618').textContent = r618.toLocaleString();
-  // Monthly forecast bar chart
-  var months = [
-    {label:'3月\n实际', val: total3, color:'#42d4f5'},
-    {label:'4月\n预测', val: p4, color:'#61afef'},
-    {label:'5月\n预测', val: p5, color:'#98c379'},
-    {label:'6月\n预测', val: p6, color:'#c678dd'}
+
+  // Monthly forecast chart
+  var fcChart = document.getElementById('chart-forecast');
+  fcChart.innerHTML = '';
+  var fmonths = [
+    {label:"3\u6708\n\u5b9e\u9645", val: totalQty, color:"#42d4f5"},
+    {label:"4\u6708\n\u9884\u6d4b", val: p4, color:"#61afef"},
+    {label:"5\u6708\n\u9884\u6d4b", val: p5, color:"#98c379"},
+    {label:"6\u6708\n\u9884\u6d4b", val: p6, color:"#c678dd"}
   ];
-  var maxM = Math.max.apply(null, months.map(function(m){ return m.val; }));
-  var el = document.getElementById('chart-forecast');
-  el.innerHTML = '';
-  months.forEach(function(m) {
-    var pct = (m.val / maxM * 100).toFixed(1);
+  var maxF = Math.max.apply(null, fmonths.map(function(m){ return m.val; }));
+  fmonths.forEach(function(m) {
+    var pct = (m.val / maxF * 100).toFixed(1);
     var col = document.createElement('div');
     col.className = 'bar-col';
-    col.innerHTML =
-      '<div class="bar-value">' + m.val.toLocaleString() + '</div>' +
+    col.innerHTML = '<div class="bar-value">' + m.val.toLocaleString() + '</div>' +
       '<div class="bar-fill" style="height:' + pct + '%;background:' + m.color + '"></div>' +
       '<div class="bar-label" style="transform:none;text-align:center;white-space:pre">' + m.label + '</div>';
-    el.appendChild(col);
+    fcChart.appendChild(col);
   });
-  // Category forecast bars
-  var cats_sorted = cats.slice().sort(function(a,b){ return b[1].qty - a[1].qty; });
-  var fcats = cats_sorted.map(function(c) {
-    return {label: c[0].replace('华为 ','').replace('Watch ','W.'), val: Math.round(c[1].qty * 0.95)};
-  });
-  var maxF = fcats[0].val;
-  var el2 = document.getElementById('chart-fcats');
-  el2.innerHTML = '';
+
+  // Category forecast chart
+  var fcatsEl = document.getElementById('chart-fcats');
+  fcatsEl.innerHTML = '';
+  var fcats = catsSorted.map(function(c){ return {label: c[0].replace('\u534e\u4e3a ','').replace('Watch ','W.'), val: Math.round(c[1].qty * 0.95)}; });
+  var maxFC = fcats[0].val;
   fcats.forEach(function(f, i) {
-    var pct = (f.val / maxF * 100).toFixed(1);
+    var pct = (f.val / maxFC * 100).toFixed(1);
     var col = document.createElement('div');
     col.className = 'bar-col';
-    col.innerHTML =
-      '<div class="bar-value">' + f.val + '</div>' +
+    col.innerHTML = '<div class="bar-value">' + f.val + '</div>' +
       '<div class="bar-fill" style="height:' + pct + '%;background:' + COLORS[i % COLORS.length] + '"></div>' +
-      '<div class="bar-label" title="' + f.label + '">' + f.label + '</div>';
-    el2.appendChild(col);
+      '<div class="bar-label">' + f.label + '</div>';
+    fcatsEl.appendChild(col);
   });
 }
 
-function renderAll() {
-  try {
-    renderKPI();
-    renderDailyChart();
-    renderCatsChart();
-    renderChanChart();
-    renderProds();
-    renderTop10();
-    renderForecast();
-  } catch(e) {
-    console.error('renderAll error:', e);
-    alert('渲染错误: ' + e.message);
-  }
-}
-
-// Auto-unlock if already authenticated in session
+// Auto-login
 (function(){
-  var stored = sessionStorage.getItem('dash_auth');
-  if (stored === 'ok') {
+  if (sessionStorage.getItem('dash_auth') === 'ok') {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('main').classList.remove('hidden');
     renderAll();
   }
+  sessionStorage.setItem('dash_auth', 'ok');
 })();
-sessionStorage.setItem('dash_auth', 'ok');
 </script>
 </body>
 </html>
