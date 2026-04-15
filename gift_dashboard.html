@@ -220,7 +220,7 @@ function renderConclusion(){
     ${mdNum>0?`<br><strong>🟡 中风险（共${mdNum}款，可适度增加）</strong><ul style="margin:6px 0 6px 20px">${suggMid}</ul>`:''}
     ${hiNum+mdNum===0?'<br>✅ 目前所有单品采购节奏正常，无须调整。':''}`;
 }
-function sv(name){
+function switchView(name){
   document.querySelectorAll('.view-wrap').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
