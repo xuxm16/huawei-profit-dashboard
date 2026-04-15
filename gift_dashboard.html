@@ -239,7 +239,7 @@ function init(){
   renderBar(document.getElementById('ct'),ML,TM,(i)=>colorScale(i,5));
   const ct=Object.entries(CTD).sort((a,b)=>b[1]-a[1]);
   renderHBar(document.getElementById('cc'),ct.map(([k,v])=>({name:k,total:v})),ct[0][1],['#42d4f5','#61afef','#c678dd','#e5c07b','#56b6c2']);
-  const nb=JSON.parse(TNB);
+  const nb=TNB;
   renderHBar(document.getElementById('cn'),nb,nb[0]?.total||1,['#3fb950','#58a6ff','#f0883e','#c678dd','#61afef','#e5c07b']);
   renderCatTrend();
   renderRS();renderREC();renderConclusion();
